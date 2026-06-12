@@ -1,0 +1,79 @@
+datasource db {
+  provider = "sqlite"
+  url = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum OrderStatus {
+  PENDENTE
+  PRONTO
+  ENTREGUE
+  CANCELADO
+}
+
+enum PaymentStatus {
+  PENDENTE
+  APROVADO
+  REJEITADO
+}
+
+model User {
+  id            String    @id @default(uuid())
+  nome          String
+  telefone      String
+  cpf           String    @unique
+  senha         String
+  saldo_devedor Float     @default(0.0)
+  role          Role      @default(CLIENT)
+  orders        Order[]
+  payments         Payment[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+}
+
+model Product {
+  id       String @id @default(uuid())
+  nome     String
+  preco    Float
+  estoque  Int
+  imageUrl String?
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  status        OrderStatus @default(PENDENTE)
+  data          DateTime    @default(now())
+  total         Float
+  items         Json        // Armazena a lista de itens comprados: [{ productId, nome, preco, quantidade }]
+  tipoPagamento String      @default("FIADO")
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  comprovante_url  String        // URL do comprovante enviado ou string base64
+  valor            Float
+  status_aprovacao PaymentStatus @default(PENDENTE)
+  data             DateTime      @default(now())
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  recipientId String
+  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id])
+  text        String
+  data        DateTime @default(now())
+}
