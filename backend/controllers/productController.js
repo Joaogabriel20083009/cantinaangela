@@ -5,18 +5,20 @@ export default {
   list: async (req, res) => {
     try {
       const products = await prisma.product.findMany();
-      res.json(products);
+      // Mapear imageUrl do DB para a propriedade imagem esperada no frontend
+      res.json(products.map(p => ({ ...p, imagem: p.imageUrl })));
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
   create: async (req, res) => {
     try {
-      const { nome, preco, estoque, imageUrl } = req.body;
+      const { nome, preco, estoque, imageUrl, imagem } = req.body;
+      const finalImageUrl = imageUrl || imagem;
       const product = await prisma.product.create({
-        data: { nome, preco: parseFloat(preco), estoque: parseInt(estoque), imageUrl }
+        data: { nome, preco: parseFloat(preco), estoque: parseInt(estoque), imageUrl: finalImageUrl }
       });
-      res.status(201).json(product);
+      res.status(201).json({ ...product, imagem: product.imageUrl });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
@@ -24,12 +26,24 @@ export default {
   update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { nome, preco, estoque, imageUrl } = req.body;
+      const { nome, preco, estoque, imageUrl, imagem } = req.body;
+      const finalImageUrl = imageUrl || imagem;
       const product = await prisma.product.update({
         where: { id },
-        data: { nome, preco: parseFloat(preco), estoque: parseInt(estoque), imageUrl }
+        data: { nome, preco: parseFloat(preco), estoque: parseInt(estoque), imageUrl: finalImageUrl }
       });
-      res.json(product);
+      res.json({ ...product, imagem: product.imageUrl });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+  delete: async (req, res) => {
+    try {
+      const { id } = req.params;
+      await prisma.product.delete({
+        where: { id }
+      });
+      res.json({ message: 'Produto deletado com sucesso!' });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

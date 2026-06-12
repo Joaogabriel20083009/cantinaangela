@@ -137,6 +137,17 @@ export const AppProvider = ({ children }) => {
     return data;
   };
 
+  const deleteProduct = async (productId) => {
+    const res = await fetch(`${API_URL}/products/${productId}`, {
+      method: 'DELETE',
+      headers
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    fetchData();
+    return data;
+  };
+
   const addDebt = async (userId, items) => {
     const res = await fetch(`${API_URL}/orders/debt`, {
       method: 'POST',
@@ -267,6 +278,7 @@ export const AppProvider = ({ children }) => {
       registerUser,
       addProduct,
       updateProduct,
+      deleteProduct,
       addDebt,
       createReserveOrder,
       updateOrderStatus,

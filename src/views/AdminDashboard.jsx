@@ -23,6 +23,7 @@ const AdminDashboard = () => {
     registerUser,
     addProduct,
     updateProduct,
+    deleteProduct,
     getClientLedger,
     messages,
     sendMessage,
@@ -46,6 +47,7 @@ const AdminDashboard = () => {
   const [newClientNome, setNewClientNome] = useState('');
   const [newClientCpf, setNewClientCpf] = useState('');
   const [newClientTelefone, setNewClientTelefone] = useState('');
+  const [newClientSenha, setNewClientSenha] = useState('');
   const [addClientError, setAddClientError] = useState('');
 
   // Estados para Modal de Comprovante Grande
@@ -265,12 +267,13 @@ const AdminDashboard = () => {
         nome: newClientNome,
         cpf: newClientCpf,
         telefone: newClientTelefone,
-        senha: 'user123' // Senha padrão
+        senha: newClientSenha || 'user123' // Senha personalizada ou padrão
       });
       showToast('Cliente cadastrado com sucesso!');
       setNewClientNome('');
       setNewClientCpf('');
       setNewClientTelefone('');
+      setNewClientSenha('');
       setShowAddClientModal(false);
     } catch (err) {
       setAddClientError(err.message || 'Erro ao cadastrar cliente.');
@@ -1177,7 +1180,7 @@ const AdminDashboard = () => {
                       <th className="px-6 py-4">CPF</th>
                       <th className="px-6 py-4">Telefone</th>
                       <th className="px-6 py-4 text-right">Saldo Devedor</th>
-                      <th className="px-6 py-4 text-center">Planilha</th>
+                      <th className="px-6 py-4 text-center">Ações</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-200">
@@ -1197,14 +1200,27 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <button
-                            onClick={() => setSelectedLedgerClient(client)}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-[#0b592e] bg-[#107c41]/10 hover:bg-[#107c41]/15 px-3 py-1.5 rounded-xl border border-[#107c41]/20 transition-all cursor-pointer active:scale-95"
-                            title="Ver planilha de extrato"
-                          >
-                            <FileSpreadsheet size={14} />
-                            <span>Abrir</span>
-                          </button>
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => setSelectedLedgerClient(client)}
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-[#0b592e] bg-[#107c41]/10 hover:bg-[#107c41]/15 px-3 py-1.5 rounded-xl border border-[#107c41]/20 transition-all cursor-pointer active:scale-95"
+                              title="Ver planilha de extrato"
+                            >
+                              <FileSpreadsheet size={14} />
+                              <span>Abrir</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedClient(client);
+                                setActiveTab('fiado');
+                              }}
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-500/10 hover:bg-amber-500/15 px-3 py-1.5 rounded-xl border border-amber-500/20 transition-all cursor-pointer active:scale-95"
+                              title="Lançar produtos na conta do cliente"
+                            >
+                              <ShoppingBag size={14} />
+                              <span>Lançar Fiado</span>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1564,6 +1580,14 @@ const AdminDashboard = () => {
                   setNewClientTelefone(val);
                 }}
                 required
+              />
+
+              <Input
+                label="Senha (Opcional - padrão: user123)"
+                placeholder="Defina a senha de login do cliente"
+                type="password"
+                value={newClientSenha}
+                onChange={(e) => setNewClientSenha(e.target.value)}
               />
 
               {addClientError && (
@@ -1969,28 +1993,47 @@ const AdminDashboard = () => {
                 </div>
               )}
 
-              <div className="flex gap-3 pt-3 border-t border-neutral-100">
-                <Button
-                  variant="outline"
-                  fullWidth
+              <div className="flex gap-3 pt-3 border-t border-neutral-100 items-center justify-between">
+                <button
                   type="button"
-                  onClick={() => {
-                    setShowEditProductModal(false);
-                    setEditProductError('');
-                    setEditProductImage(null);
-                    setEditProductImageName('');
-                    setEditingProduct(null);
+                  onClick={async () => {
+                    if (window.confirm(`Tem certeza que deseja excluir o produto "${editingProduct.nome}"?`)) {
+                      try {
+                        await deleteProduct(editingProduct.id);
+                        showToast(`Produto "${editingProduct.nome}" excluído com sucesso!`);
+                        setShowEditProductModal(false);
+                        setEditingProduct(null);
+                      } catch (err) {
+                        setEditProductError(err.message || 'Erro ao excluir produto.');
+                      }
+                    }
                   }}
+                  className="px-4 py-3 bg-rose-50 border border-rose-200 hover:bg-rose-100 text-rose-600 font-bold text-sm rounded-2xl flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
                 >
-                  Cancelar
-                </Button>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  fullWidth
-                >
-                  Salvar Alterações
-                </Button>
+                  <Trash2 size={16} />
+                  <span>Excluir</span>
+                </button>
+                <div className="flex gap-3 flex-1 justify-end">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => {
+                      setShowEditProductModal(false);
+                      setEditProductError('');
+                      setEditProductImage(null);
+                      setEditProductImageName('');
+                      setEditingProduct(null);
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                  >
+                    Salvar Alterações
+                  </Button>
+                </div>
               </div>
             </form>
           </Card>
