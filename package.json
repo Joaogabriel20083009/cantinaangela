@@ -7,7 +7,7 @@
     "dev:frontend": "vite",
     "dev:backend": "nodemon backend/server.js",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "build": "vite build",
+    "build": "node scripts/build.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "postinstall": "prisma generate"
