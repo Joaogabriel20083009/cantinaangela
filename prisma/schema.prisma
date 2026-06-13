@@ -78,3 +78,11 @@ model Message {
   text        String
   data        DateTime @default(now())
 }
+
+model Config {
+  id           Int      @id @default(1)
+  pixKey       String?
+  beneficiario String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

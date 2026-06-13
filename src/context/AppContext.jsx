@@ -259,7 +259,7 @@ export const AppProvider = ({ children }) => {
       body: JSON.stringify(newConfig)
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
+    if (!res.ok) throw new Error(data.detail || data.error || 'Erro ao atualizar configurações');
     fetchData();
     return data.config;
   };
