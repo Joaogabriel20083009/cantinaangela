@@ -28,10 +28,10 @@ const readConfig = () => {
 const writeConfig = (config) => {
   try {
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-    return true;
+    return { success: true };
   } catch (error) {
     console.error('Error writing config:', error);
-    return false;
+    return { success: false, error: error.message };
   }
 };
 
@@ -46,9 +46,10 @@ export default {
       return res.status(400).json({ error: 'Chave Pix e Beneficiário são obrigatórios.' });
     }
     const config = { pixKey, beneficiario };
-    const success = writeConfig(config);
-    if (!success) {
-      return res.status(500).json({ error: 'Erro ao salvar configurações.' });
+    const result = writeConfig(config);
+    if (!result.success) {
+      // Retornar o erro específico para ajudar diagnóstico localmente
+      return res.status(500).json({ error: 'Erro ao salvar configurações.', detail: result.error });
     }
     res.json({ message: 'Configurações atualizadas com sucesso!', config });
   }
