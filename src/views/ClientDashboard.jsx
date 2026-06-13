@@ -67,7 +67,12 @@ const ClientDashboard = () => {
 
   // Estados para Chat com Administrador
   const [showChat, setShowChat] = useState(false);
+  const [showChatHistory, setShowChatHistory] = useState(true);
   const [chatText, setChatText] = useState('');
+
+  useEffect(() => {
+    if (showChat) setShowChatHistory(false);
+  }, [showChat]);
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -1188,7 +1193,7 @@ const ClientDashboard = () => {
         {showChat ? (
           <Card className="w-[calc(100vw-1.25rem)] max-w-sm md:w-80 sm:w-96 h-[75vh] max-h-[520px] bg-white border-neutral-350 shadow-2xl flex flex-col justify-between p-0 overflow-hidden rounded-3xl animate-fade-in">
             {/* Header do Chat */}
-            <div className="bg-[#107c41] text-white p-4 flex items-center justify-between shrink-0">
+            <div className="bg-[#107c41] text-white p-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center font-bold text-white border border-white/20">
                   Â
@@ -1201,16 +1206,25 @@ const ClientDashboard = () => {
                   </span>
                 </div>
               </div>
-              <button 
-                onClick={() => setShowChat(false)}
-                className="text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-              >
-                <X size={20} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowChatHistory(prev => !prev)}
+                  className="hidden md:inline-flex items-center gap-2 rounded-2xl border border-white/25 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.15em] text-white/90 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  {showChatHistory ? 'Ocultar conversa' : 'Mostrar conversa'}
+                </button>
+                <button 
+                  onClick={() => setShowChat(false)}
+                  className="text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             {/* Mensagens do Chat */}
-            <div className="flex-1 p-4 overflow-y-auto bg-neutral-50 flex flex-col gap-3">
+            <div className={`${showChatHistory ? 'flex' : 'hidden md:flex'} flex-1 p-4 overflow-y-auto bg-neutral-50 flex-col gap-3`}>
               {messages
                 .filter(m => 
                   (m.senderId === currentUser.id && m.recipientId === 'u-admin') ||
@@ -1252,6 +1266,20 @@ const ClientDashboard = () => {
                   <p className="text-[10px] text-neutral-400 mt-0.5">Diga olá ou tire dúvidas com a Ângela sobre lanches ou limites.</p>
                 </div>
               )}
+            </div>
+
+            <div className={`${showChatHistory ? 'hidden' : 'flex'} md:hidden flex-1 items-center justify-center p-6 bg-neutral-50 text-center rounded-b-2xl border-t border-neutral-200`}>
+              <div className="space-y-3">
+                <p className="font-bold text-sm text-neutral-900">Conversa oculta</p>
+                <p className="text-[11px] text-neutral-500">Toque no botão para abrir o histórico de mensagens.</p>
+                <button
+                  type="button"
+                  onClick={() => setShowChatHistory(true)}
+                  className="mt-1 inline-flex items-center justify-center rounded-2xl bg-[#107c41] px-4 py-3 text-sm font-bold text-white hover:bg-[#0b592e] transition-colors"
+                >
+                  Ver conversa
+                </button>
+              </div>
             </div>
 
             {/* Input de Mensagem */}
