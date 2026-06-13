@@ -17,24 +17,26 @@ const authController = {
       const { identifier, senha } = req.body;
 
       if (!identifier || !senha) {
-        return res.status(400).json({ error: 'Identificador (Telefone ou CPF) e senha são obrigatórios.' });
+        return res.status(400).json({ error: 'CPF e senha são obrigatórios.' });
       }
 
       // Limpar caracteres especiais para busca
       const cleanedInput = identifier.replace(/\D/g, '');
 
-      // Buscar usuário pelo CPF ou Telefone
+      // Validar que é CPF (exatamente 11 dígitos)
+      if (cleanedInput.length !== 11) {
+        return res.status(400).json({ error: 'CPF deve conter exatamente 11 dígitos.' });
+      }
+
+      // Buscar usuário pelo CPF
       const user = await prisma.user.findFirst({
         where: {
-          OR: [
-            { cpf: cleanedInput },
-            { telefone: cleanedInput }
-          ]
+          cpf: cleanedInput
         }
       });
 
       if (!user) {
-        return res.status(404).json({ error: 'Usuário (Telefone ou CPF) não cadastrado.' });
+        return res.status(404).json({ error: 'CPF não cadastrado.' });
       }
 
       // Validar senha (em produção, usar bcrypt.compare)

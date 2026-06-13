@@ -479,7 +479,7 @@ const AdminDashboard = () => {
           <div className="flex flex-col gap-6">
             
             {/* Card Seleção de Cliente */}
-            <Card className="flex flex-col gap-4">
+            <Card className="flex flex-col gap-4 overflow-visible">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-neutral-800">1. Selecionar Cliente</h3>
                 <button 
@@ -637,12 +637,12 @@ const AdminDashboard = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filteredProducts.map(p => (
                   <Card
                     key={p.id}
                     onClick={() => addToCart(p)}
-                    className="flex flex-col justify-between h-64 p-3 border-neutral-200 relative group cursor-pointer active:scale-95 shadow-sm bg-white"
+                    className="flex flex-col justify-between h-full min-h-[20rem] p-3 border-neutral-200 relative group cursor-pointer active:scale-95 shadow-sm bg-white"
                   >
                     {/* Imagem do Produto */}
                     <div className="h-28 w-full bg-neutral-100 rounded-xl overflow-hidden mb-2 relative flex items-center justify-center border border-neutral-200/40">

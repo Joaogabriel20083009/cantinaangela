@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Card from '../components/Card';
-import { LogIn, User, Lock, Coffee, Phone, UserPlus } from 'lucide-react';
+import { LogIn, User, Lock, Coffee, Eye, EyeOff, UserPlus } from 'lucide-react';
 
 const LoginView = () => {
   const { login, registerUser } = useApp();
@@ -16,6 +16,8 @@ const LoginView = () => {
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showSenha, setShowSenha] = useState(false);
+  const [showConfirmSenha, setShowConfirmSenha] = useState(false);
 
   // Register states
   const [nome, setNome] = useState('');
@@ -23,29 +25,18 @@ const LoginView = () => {
   const [cpf, setCpf] = useState('');
   const [confirmSenha, setConfirmSenha] = useState('');
 
-  // Formata dinamicamente: CPF (se começar com 0) ou Celular (se começar com qualquer outro número)
+  // Formata apenas CPF (11 dígitos)
   const handleIdentifierChange = (e) => {
     let value = e.target.value.replace(/\D/g, ''); // Apenas números
     if (value.length > 11) value = value.slice(0, 11);
     
-    if (value.startsWith('0')) {
-      // Formata como CPF (ex: 000.000.000-00)
-      if (value.length > 9) {
-        value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{1,2})$/, '$1.$2.$3-$4');
-      } else if (value.length > 6) {
-        value = value.replace(/^(\d{3})(\d{3})(\d{1,3})$/, '$1.$2.$3');
-      } else if (value.length > 3) {
-        value = value.replace(/^(\d{3})(\d{1,3})$/, '$1.$2');
-      }
-    } else {
-      // Formata como Celular (ex: (11) 99999-9999)
-      if (value.length > 10) {
-        value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
-      } else if (value.length > 6) {
-        value = value.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
-      } else if (value.length > 2) {
-        value = value.replace(/^(\d{2})(\d{0,4})$/, '($1) $2');
-      }
+    // Formata como CPF (ex: 000.000.000-00)
+    if (value.length > 9) {
+      value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{1,2})$/, '$1.$2.$3-$4');
+    } else if (value.length > 6) {
+      value = value.replace(/^(\d{3})(\d{3})(\d{1,3})$/, '$1.$2.$3');
+    } else if (value.length > 3) {
+      value = value.replace(/^(\d{3})(\d{1,3})$/, '$1.$2');
     }
     
     setIdentifier(value);
@@ -107,7 +98,7 @@ const LoginView = () => {
       }
     } else {
       if (!identifier || !senha) {
-        setError('Por favor, preencha todos os campos.');
+        setError('CPF e senha são obrigatórios.');
         return;
       }
     }
@@ -130,7 +121,7 @@ const LoginView = () => {
         // Login automático após registro bem-sucedido
         await login(cpf.replace(/\D/g, ''), senha);
       } else {
-        await login(identifier, senha);
+        await login(identifier.replace(/\D/g, ''), senha);
       }
     } catch (err) {
       setError(err.message || (isRegister ? 'Erro ao realizar cadastro.' : 'Erro ao fazer login.'));
@@ -214,10 +205,10 @@ const LoginView = () => {
 
             {!isRegister && (
               <Input
-                label="Telefone ou CPF"
+                label="CPF"
                 id="login-identifier"
                 type="text"
-                placeholder="(11) 99999-9999 ou CPF"
+                placeholder="000.000.000-00"
                 value={identifier}
                 onChange={handleIdentifierChange}
                 icon={User}
@@ -228,11 +219,13 @@ const LoginView = () => {
             <Input
               label="Senha"
               id="login-senha"
-              type="password"
+              type={showSenha ? 'text' : 'password'}
               placeholder="••••••••"
               value={senha}
               onChange={handleSenhaChange}
               icon={Lock}
+              trailingIcon={showSenha ? EyeOff : Eye}
+              onTrailingIconClick={() => setShowSenha(!showSenha)}
               required
             />
 
@@ -240,11 +233,13 @@ const LoginView = () => {
               <Input
                 label="Confirmar Senha"
                 id="register-confirm-senha"
-                type="password"
+                type={showConfirmSenha ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={confirmSenha}
                 onChange={handleConfirmSenhaChange}
                 icon={Lock}
+                trailingIcon={showConfirmSenha ? EyeOff : Eye}
+                onTrailingIconClick={() => setShowConfirmSenha(!showConfirmSenha)}
                 required
               />
             )}

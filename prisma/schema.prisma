@@ -44,6 +44,7 @@ model Product {
   nome     String
   preco    Float
   estoque  Int
+  categoria String @default("Salgados")
   imageUrl String?
 }
 

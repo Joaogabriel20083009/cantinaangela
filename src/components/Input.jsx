@@ -11,6 +11,8 @@ const Input = ({
   required = false,
   className = '',
   icon: Icon,
+  trailingIcon: TrailingIcon,
+  onTrailingIconClick,
   ...props
 }) => {
   return (
@@ -38,9 +40,20 @@ const Input = ({
             error ? 'border-rose-500 focus:ring-rose-500/10' : 'border-neutral-250 focus:ring-amber-500/10'
           } ${
             Icon ? 'pl-12' : ''
+          } ${
+            TrailingIcon ? 'pr-12' : ''
           } text-neutral-800 placeholder-neutral-400 rounded-2xl transition-all duration-200 focus:outline-none focus:border-amber-500 focus:ring-4 text-base`}
           {...props}
         />
+        {TrailingIcon && (
+          <button
+            type="button"
+            onClick={onTrailingIconClick}
+            className="absolute right-4 text-neutral-400 hover:text-neutral-600 transition-colors"
+          >
+            <TrailingIcon size={20} />
+          </button>
+        )}
       </div>
 
       {error && (
