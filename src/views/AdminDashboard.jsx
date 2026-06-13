@@ -180,10 +180,11 @@ const AdminDashboard = () => {
            u.cpf.includes(query);
   });
 
-  // Filtragem de produtos por busca e categoria
+  // Filtragem de produtos por busca, categoria e disponibilidade
   const filteredProducts = products.filter(p => {
     const matchesCategory = selectedCategory === 'Todos' || p.categoria === selectedCategory;
-    return matchesCategory;
+    const inStock = Number(p.estoque) > 0;
+    return matchesCategory && inStock;
   });
 
   // Adicionar produto ao carrinho

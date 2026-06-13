@@ -76,10 +76,11 @@ const ClientDashboard = () => {
 
   const categories = ['Todos', 'Salgados', 'Bebidas', 'Saudáveis', 'Doces'];
 
-  // Filtragem de produtos por categoria
+  // Filtragem de produtos por categoria e disponibilidade
   const filteredProducts = products.filter(p => {
     const matchesCategory = selectedCategory === 'Todos' || p.categoria === selectedCategory;
-    return matchesCategory;
+    const inStock = Number(p.estoque) > 0;
+    return matchesCategory && inStock;
   });
 
   // Adicionar ao carrinho do cliente
