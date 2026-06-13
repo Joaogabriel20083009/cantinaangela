@@ -1184,18 +1184,18 @@ const ClientDashboard = () => {
       )}
 
       {/* -------------------- FLOATING CHAT WIDGET -------------------- */}
-      <div className="fixed bottom-24 md:bottom-6 left-6 z-40">
+      <div className="fixed bottom-24 md:bottom-6 left-1/2 md:left-6 transform -translate-x-1/2 md:-translate-x-0 z-40">
         {showChat ? (
-          <Card className="w-80 sm:w-96 h-[450px] bg-white border-neutral-350 shadow-2xl flex flex-col justify-between p-0 overflow-hidden rounded-2xl animate-fade-in">
+          <Card className="w-[calc(100vw-1.25rem)] max-w-sm md:w-80 sm:w-96 h-[75vh] max-h-[520px] bg-white border-neutral-350 shadow-2xl flex flex-col justify-between p-0 overflow-hidden rounded-3xl animate-fade-in">
             {/* Header do Chat */}
             <div className="bg-[#107c41] text-white p-4 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold text-white border border-white/20">
+                <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center font-bold text-white border border-white/20">
                   Â
                 </div>
                 <div>
                   <h4 className="font-extrabold text-sm leading-none">Falar com a Ângela</h4>
-                  <span className="text-[9px] text-emerald-100 font-bold tracking-wider uppercase flex items-center gap-1 mt-1">
+                  <span className="text-[10px] text-emerald-100 font-bold tracking-wider uppercase flex items-center gap-1 mt-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
                     Cantina Online
                   </span>
@@ -1203,9 +1203,9 @@ const ClientDashboard = () => {
               </div>
               <button 
                 onClick={() => setShowChat(false)}
-                className="text-white/80 hover:text-white p-1 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                className="text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
               >
-                <X size={18} />
+                <X size={20} />
               </button>
             </div>
 
@@ -1255,19 +1255,19 @@ const ClientDashboard = () => {
             </div>
 
             {/* Input de Mensagem */}
-            <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-neutral-200 flex gap-2 shrink-0">
+            <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-neutral-200 flex gap-3 flex-wrap items-center justify-between shrink-0">
               <input
                 type="text"
                 value={chatText}
                 onChange={(e) => setChatText(e.target.value)}
                 placeholder="Escreva uma mensagem..."
-                className="flex-1 px-3 py-2 bg-neutral-50 border border-neutral-200 text-neutral-800 rounded-xl focus:outline-none focus:border-[#107c41] text-xs font-sans"
+                className="flex-1 min-w-0 px-4 py-3 bg-neutral-50 border border-neutral-200 text-neutral-800 rounded-2xl focus:outline-none focus:border-[#107c41] text-sm font-sans"
               />
               <button 
                 type="submit"
-                className="w-8 h-8 rounded-xl bg-[#107c41] text-white flex items-center justify-center hover:bg-[#0b592e] transition-colors cursor-pointer active:scale-95 shrink-0"
+                className="w-14 h-14 rounded-2xl bg-[#107c41] text-white flex items-center justify-center hover:bg-[#0b592e] transition-colors cursor-pointer active:scale-95 shrink-0"
               >
-                <Send size={14} />
+                <Send size={18} />
               </button>
             </form>
           </Card>
