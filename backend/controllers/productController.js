@@ -34,16 +34,25 @@ export default {
       const { id } = req.params;
       const { nome, preco, estoque, imageUrl, imagem, categoria } = req.body;
       const finalImageUrl = imageUrl || imagem;
+      const parsedStock = typeof estoque !== 'undefined' && estoque !== null ? parseInt(estoque) : undefined;
+
+      // Se o estoque informado for 0 ou menor, remover o produto do banco
+      if (typeof parsedStock !== 'undefined' && !isNaN(parsedStock) && parsedStock <= 0) {
+        await prisma.product.delete({ where: { id } });
+        return res.json({ message: 'Produto removido pois o estoque zerou.' });
+      }
+
       const product = await prisma.product.update({
         where: { id },
         data: { 
           nome, 
           preco: parseFloat(preco), 
-          estoque: parseInt(estoque), 
+          estoque: typeof parsedStock !== 'undefined' && !isNaN(parsedStock) ? parsedStock : undefined, 
           imageUrl: finalImageUrl,
           categoria: categoria || undefined
         }
       });
+
       res.json({ ...product, imagem: product.imageUrl });
     } catch (error) {
       res.status(400).json({ error: error.message });
